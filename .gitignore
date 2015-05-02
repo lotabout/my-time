@@ -9,3 +9,7 @@ pom.xml
 /.env
 *.log
 site.db.*
+*~
+*.swp
+*.swo
+.nrepl-port

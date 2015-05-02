@@ -11,6 +11,7 @@
                  [environ "1.0.0"]
                  [im.chit/cronj "1.4.3"]
                  [compojure "1.3.3"]
+                 [buddy "0.5.2"]
                  [ring/ring-defaults "0.1.4"]
                  [ring/ring-session-timeout "0.1.0"]
                  [ring-middleware-format "0.5.0"]

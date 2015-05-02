@@ -10,8 +10,10 @@
             [ring.middleware.session-timeout :refer [wrap-idle-session-timeout]]
             [ring.middleware.session.memory :refer [memory-store]]
             [ring.middleware.format :refer [wrap-restful-format]]
-            
-            
+            [buddy.auth.middleware :refer [wrap-authentication]]
+            [buddy.auth.accessrules :refer [wrap-access-rules success]]
+            [buddy.auth.backends.session :refer [session-backend]]
+            [buddy.auth :refer [authenticated?]]
             ))
 
 (defn wrap-servlet-context [handler]
@@ -38,6 +40,16 @@
                   <p>We've dispatched a team of highly trained gnomes to take care of the problem.</p>
                 </body>"}))))
 
+;;; authentication
+(def rules
+  [{:uri "/login"
+    :handler success}
+   {:uri "/*"
+    :handler authenticated?}])
+
+(defn on-error [request value]
+  (redirect "/login"))
+
 (defn development-middleware [handler]
   (if (env :dev)
     (-> handler
@@ -49,6 +61,8 @@
 (defn production-middleware [handler]
   (-> handler
       
+      (wrap-access-rules {:rules rules :on-error on-error})
+      (wrap-authentication (session-backend))
       (wrap-restful-format :formats [:json-kw :edn :transit-json :transit-msgpack])
       (wrap-idle-session-timeout
         {:timeout (* 60 30)

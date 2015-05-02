@@ -1,6 +1,7 @@
 (ns my-time.handler
   (:require [compojure.core :refer [defroutes routes]]
             [my-time.routes.home :refer [home-routes]]
+            [my-time.routes.auth :refer [auth-routes]]
             
             [my-time.middleware
              :refer [development-middleware production-middleware]]
@@ -69,8 +70,8 @@
 
 (def app
   (-> (routes
-        home-routes
-        
-        base-routes)
+       auth-routes
+       home-routes
+       base-routes)
       development-middleware
       production-middleware))
