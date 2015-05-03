@@ -5,6 +5,7 @@
             [bouncer.core :as b]
             [bouncer.validators :as v]
             [my-time.db.core :as db]
+            [my-time.session :as session]
             ))
 
 (v/defvalidator valid-password
@@ -17,22 +18,34 @@
   (layout/render
     "login.html" {:errors errors :username username}))
 
-(defn login! [{:keys [params session]}]
+;; (defn login! [{:keys [params session]}]
+;;   (let [[errors bindings]
+;;         (b/validate params
+;;                     :username v/required
+;;                     :password [v/required [valid-password (:username params)]])]
+;;     (if errors
+;;       (login-page (:username bindings) errors)
+;;       (-> (redirect "/")
+;;           (assoc :session (assoc session :identity (:username bindings)))))))
+(defn login! [{:keys [params]}]
   (let [[errors bindings]
         (b/validate params
                     :username v/required
                     :password [v/required [valid-password (:username params)]])]
     (if errors
       (login-page (:username bindings) errors)
-      (-> (redirect "/")
-          (assoc :session (assoc session :identity (:username bindings)))))))
+      (do (session/put! :identity (get bindings :username))
+          (redirect "/")))))
 
-(defn clear-session! [response]
-  (-> response
-      (assoc :session {})))
+;; (defn clear-session! [response]
+;;   (-> response
+;;       (assoc :session {})))
+(defn logout []
+  (do (session/clear!)
+      (redirect "/login")))
 
 (defroutes auth-routes
   (GET "/login" [] (login-page ""))
-  (POST "/login" req (login! req))
+  (POST "/login" req (session/with-session req (login! req)))
 
-  (GET "/logout" req (clear-session! (redirect "/login"))))
+  (GET "/logout" req (session/with-session req (logout))))

@@ -1,14 +1,19 @@
 {% extends "base.html" %}
 {% block content %}
-  <div class="jumbotron">
-    <h1>Welcome to my-time</h1>
-    <p>Time to start building your site!</p>
-    <p><a class="btn btn-primary btn-lg" href="http://luminusweb.net">Learn more &raquo;</a></p>
-  </div>
 
-  <div class="row">
-    <div class="span12">
-    {{docs|markdown}}
-    </div>
+<div class="row">
+  <p>{{ username }}</p>
+</div>
+
+
+<div class="row">
+  <!-- left column: the details of time periods -->
+  <div class="col-xs-12 col-sm-8 col-md-8">
+    Time Periods.
   </div>
+  <!-- right column: for buttons. -->
+  <div class="col-xs-3 col-sm-4 col-md-4">
+    Tap
+  </div>
+</div>
 {% endblock %}
